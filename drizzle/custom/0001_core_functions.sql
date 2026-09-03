@@ -1,6 +1,9 @@
 -- ranking.gg core functions & triggers (auth 비의존 — pglite 테스트에서도 적용)
 create extension if not exists pg_trgm;
 
+-- ───────────── app_settings (관리자 이메일 등) ─────────────
+create table if not exists public.app_settings (key text primary key, value text not null, updated_at timestamptz not null default now());
+
 -- ───────────── updated_at ─────────────
 create or replace function public.set_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
@@ -55,38 +58,44 @@ begin
   where s.content_id = p_content;
 end $$;
 
--- 카테고리 전체 집계(시드 후 일괄용)
+-- 카테고리 전체 집계(시드 후 일괄용) — GROUP BY 사전 집계 (lateral 보다 수십 배 빠름)
 create or replace function public.refresh_all_content_stats(p_cat integer) returns void language plpgsql as $$
 begin
   insert into public.content_stats(content_id, category_id)
     select id, category_id from public.contents where category_id = p_cat
   on conflict (content_id) do nothing;
 
+  with r as (
+    select ra.content_id, count(*) cnt, avg(ra.score) avg,
+      count(*) filter (where ra.score = 0.5) d1, count(*) filter (where ra.score = 1.0) d2,
+      count(*) filter (where ra.score = 1.5) d3, count(*) filter (where ra.score = 2.0) d4,
+      count(*) filter (where ra.score = 2.5) d5, count(*) filter (where ra.score = 3.0) d6,
+      count(*) filter (where ra.score = 3.5) d7, count(*) filter (where ra.score = 4.0) d8,
+      count(*) filter (where ra.score = 4.5) d9, count(*) filter (where ra.score = 5.0) d10
+    from public.ratings ra join public.contents c on c.id = ra.content_id where c.category_id = p_cat group by ra.content_id
+  ),
+  rv as (
+    select v.content_id, count(*) cnt from public.reviews v join public.contents c on c.id = v.content_id
+    where c.category_id = p_cat and not v.is_hidden group by v.content_id
+  ),
+  cm as (
+    select x.content_id, count(*) cnt from (
+      select k.target_id content_id from public.comments k where k.target_type = 'content' and not k.is_hidden
+      union all
+      select v.content_id from public.comments k join public.reviews v on k.target_type = 'review' and v.id = k.target_id where not k.is_hidden
+    ) x join public.contents c on c.id = x.content_id where c.category_id = p_cat group by x.content_id
+  )
   update public.content_stats s set
-    rating_count = coalesce(a.cnt, 0),
-    rating_avg   = coalesce(a.avg, 0),
-    dist_1 = coalesce(a.d1,0), dist_2 = coalesce(a.d2,0), dist_3 = coalesce(a.d3,0), dist_4 = coalesce(a.d4,0), dist_5 = coalesce(a.d5,0),
-    dist_6 = coalesce(a.d6,0), dist_7 = coalesce(a.d7,0), dist_8 = coalesce(a.d8,0), dist_9 = coalesce(a.d9,0), dist_10 = coalesce(a.d10,0),
+    rating_count = coalesce(r.cnt, 0),
+    rating_avg   = coalesce(r.avg, 0),
+    dist_1 = coalesce(r.d1,0), dist_2 = coalesce(r.d2,0), dist_3 = coalesce(r.d3,0), dist_4 = coalesce(r.d4,0), dist_5 = coalesce(r.d5,0),
+    dist_6 = coalesce(r.d6,0), dist_7 = coalesce(r.d7,0), dist_8 = coalesce(r.d8,0), dist_9 = coalesce(r.d9,0), dist_10 = coalesce(r.d10,0),
     review_count  = coalesce(rv.cnt, 0),
     comment_count = coalesce(cm.cnt, 0)
   from public.contents c
-  left join lateral (
-    select count(*) cnt, avg(score) avg,
-      count(*) filter (where score = 0.5) d1, count(*) filter (where score = 1.0) d2,
-      count(*) filter (where score = 1.5) d3, count(*) filter (where score = 2.0) d4,
-      count(*) filter (where score = 2.5) d5, count(*) filter (where score = 3.0) d6,
-      count(*) filter (where score = 3.5) d7, count(*) filter (where score = 4.0) d8,
-      count(*) filter (where score = 4.5) d9, count(*) filter (where score = 5.0) d10
-    from public.ratings r where r.content_id = c.id
-  ) a on true
-  left join lateral (select count(*) cnt from public.reviews r where r.content_id = c.id and not r.is_hidden) rv on true
-  left join lateral (
-    select count(*) cnt from public.comments k
-    where not k.is_hidden and (
-      (k.target_type = 'content' and k.target_id = c.id) or
-      (k.target_type = 'review' and k.target_id in (select id from public.reviews r where r.content_id = c.id))
-    )
-  ) cm on true
+  left join r on r.content_id = c.id
+  left join rv on rv.content_id = c.id
+  left join cm on cm.content_id = c.id
   where s.content_id = c.id and c.category_id = p_cat;
 end $$;
 

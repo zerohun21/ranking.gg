@@ -4,7 +4,7 @@
  *  1) 시드 유저 600  2) 별점(SQL 일괄)  3) 리뷰  4) 댓글/대댓글  5) 대결  6) 게시글  7) 유저 카테고리 3개
  *  8) 통계 재계산  9) 8주 스냅샷(지난주 ±0~8 흔들기)  10) 프로필 카운터·뱃지
  */
-import "dotenv/config";
+import "@/scripts/env";
 import { sql } from "drizzle-orm";
 import { createDirectDb } from "@/lib/db/direct";
 import { battles, categories, comments, contents, posts, profiles, reviews } from "@/lib/db/schema";
@@ -75,6 +75,7 @@ async function main() {
         least(400, greatest(3, round(ln(1 + coalesce(c.external_score_count, 50)) * 20 * (0.5 + random()))))::int n,
         coalesce(c.external_score / 2.0, 3.5) mean
       from contents c join categories k on k.id = c.category_id where k.is_official
+        and not exists (select 1 from ratings r where r.content_id = c.id)
     ),
     gen as (
       select s.content_id, (u.ids)[1 + floor(random() * cardinality(u.ids))::int] user_id,
@@ -94,6 +95,7 @@ async function main() {
   for (const cat of cats) {
     const top = await db.execute<{ id: number; title: string }>(sql`
       select id, title from contents where category_id = ${cat.id} and external_score is not null
+        and not exists (select 1 from reviews rv where rv.content_id = contents.id)
       order by external_score desc, external_score_count desc nulls last
       limit (select ceil(count(*) * 0.3) from contents where category_id = ${cat.id})`);
     const rows: (typeof reviews.$inferInsert)[] = [];
@@ -141,6 +143,8 @@ async function main() {
   log("battles…");
   await db.execute(sql`update content_stats set elo = 1500, elo_wins = 0, elo_losses = 0`);
   for (const cat of cats) {
+    const existing = await db.execute<{ n: number }>(sql`select count(*)::int n from battles where category_id = ${cat.id}`);
+    if ((existing[0]?.n ?? 0) >= 100) continue;
     const top = await db.execute<{ id: number }>(sql`select id from contents where category_id = ${cat.id} order by external_score desc nulls last, external_score_count desc nulls last limit 100`);
     if (top.length < 2) continue;
     const rows: (typeof battles.$inferInsert)[] = [];
@@ -168,6 +172,8 @@ async function main() {
   /* 6) 게시글 — 카테고리별 40개 + 댓글 */
   log("posts…");
   for (const cat of cats) {
+    const existingPosts = await db.execute<{ n: number }>(sql`select count(*)::int n from posts where category_id = ${cat.id}`);
+    if ((existingPosts[0]?.n ?? 0) >= 40) continue;
     const top = await db.execute<{ id: number; title: string }>(sql`select id, title from contents where category_id = ${cat.id} order by external_score desc nulls last limit 60`);
     if (top.length < 2) continue;
     const rows: (typeof posts.$inferInsert)[] = [];

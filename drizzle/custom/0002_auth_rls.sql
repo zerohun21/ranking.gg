@@ -5,7 +5,7 @@ create or replace function public.handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
 declare
   v_nick text;
-  v_admins text[] := string_to_array(coalesce(current_setting('app.admin_emails', true), ''), ',');
+  v_admins text[] := string_to_array(coalesce((select value from public.app_settings where key = 'admin_emails'), ''), ',');
   v_is_anon boolean := coalesce(new.is_anonymous, false);
   i integer := 0;
 begin
@@ -66,6 +66,7 @@ alter table public.posts enable row level security;
 alter table public.reports enable row level security;
 alter table public.collection_runs enable row level security;
 alter table public.content_views enable row level security;
+alter table public.app_settings enable row level security;
 
 -- 읽기 public
 do $$

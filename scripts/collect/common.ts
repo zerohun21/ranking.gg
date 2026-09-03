@@ -1,7 +1,7 @@
 /**
  * 수집 공통: fetch(백오프) · 동시성 · 체크포인트 · upsert · 로그
  */
-import "dotenv/config";
+import "@/scripts/env";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import pLimit from "p-limit";

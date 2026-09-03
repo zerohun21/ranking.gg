@@ -3,7 +3,7 @@
  *   pnpm db:migrate            # 전부
  *   pnpm db:migrate -- --core  # auth/RLS 제외 (로컬 PG 테스트용)
  */
-import "dotenv/config";
+import "@/scripts/env";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import postgres from "postgres";
@@ -14,7 +14,7 @@ async function main() {
   const url = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
   if (!url) throw new Error("DIRECT_URL / DATABASE_URL not set");
   const coreOnly = process.argv.includes("--core");
-  const client = postgres(url, { max: 1, prepare: false });
+  const client = postgres(url, { max: 1, prepare: false, onnotice: () => {} });
   const db = drizzle(client);
 
   console.log("→ extensions");
@@ -35,8 +35,8 @@ async function main() {
 
   const admins = process.env.ADMIN_EMAILS;
   if (admins && !coreOnly) {
-    console.log("→ app.admin_emails");
-    await client.unsafe(`alter database postgres set app.admin_emails = '${admins.replace(/'/g, "''")}'`);
+    console.log("→ app_settings.admin_emails");
+    await client.unsafe(`insert into public.app_settings(key, value) values ('admin_emails', '${admins.replace(/'/g, "''")}') on conflict (key) do update set value = excluded.value, updated_at = now()`);
   }
   await client.end();
   console.log("✓ migrate done");

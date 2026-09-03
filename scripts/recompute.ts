@@ -1,5 +1,5 @@
 /** 랭킹 전체 재계산: refresh_all_content_stats + recompute_category (모든 카테고리). --snapshot 이면 주간 스냅샷도 */
-import "dotenv/config";
+import "@/scripts/env";
 import { sql } from "drizzle-orm";
 import { createDirectDb } from "@/lib/db/direct";
 

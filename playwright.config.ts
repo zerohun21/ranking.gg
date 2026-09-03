@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
-  use: { baseURL, trace: "retain-on-failure", screenshot: "only-on-failure" },
+  use: { baseURL, trace: "retain-on-failure", screenshot: "only-on-failure", locale: "ko-KR", colorScheme: "dark" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },
