@@ -54,12 +54,12 @@ export function BattleCard({ battle, loggedIn, size = "md", onVoted, showComment
         <Poster src={item.posterUrl} alt={item.title} size="lg" className={cn("shrink-0 ring-1 ring-black/10", size === "lg" ? "h-[200px] w-[150px] sm:h-[240px] sm:w-[180px]" : "h-[150px] w-[112px]")} sizes="180px" />
         <div className="w-full text-center">
           <div className={cn("line-clamp-1 font-bold", size === "lg" ? "text-base" : "text-sm")}>{item.title}</div>
-          <div className="mt-1 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
             <TierBadge tier={item.tier as Tier | null} size="sm" />
             <span>#{item.rank ?? "–"}</span>
             <span className="tabular">{formatScore(item.score)}</span>
           </div>
-          <div className="text-[11px] text-muted-foreground tabular">{t("record", { wins: item.wins, losses: item.losses })} · ELO {Math.round(item.elo)}</div>
+          <div className="max-w-full truncate text-[11px] text-muted-foreground tabular">{t("record", { wins: item.wins, losses: item.losses })} · ELO {Math.round(item.elo)}</div>
         </div>
         {choice ? (
           <div className={cn("text-2xl font-black tabular", won ? (side === "a" ? "text-win" : "text-lose") : "text-muted-foreground")}>{pct}%</div>
