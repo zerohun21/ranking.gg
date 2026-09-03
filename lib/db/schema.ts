@@ -82,36 +82,36 @@ export const categories = pgTable(
 
 /* ───────────────────────── contents ───────────────────────── */
 export type ContentMetadata = {
-  genres?: string[];
-  platforms?: string[];
-  providers?: string[];
-  kind?: string; // movie|tv|variety|album|book|game|webtoon
-  author?: string;
-  artist?: string;
-  authors?: string[];
-  weekdays?: string[];
-  status?: "ongoing" | "finished" | "rest" | string;
-  age?: string;
-  tags?: string[];
-  developers?: string[];
-  publishers?: string[];
-  publisher?: string;
-  runtime?: number;
-  seasons?: number;
-  episodes?: number;
-  directors?: string[];
-  cast?: string[];
+  genres?: string[] | null;
+  platforms?: string[] | null;
+  providers?: string[] | null;
+  kind?: string | null; // movie|tv|variety|album|book|game|webtoon
+  author?: string | null;
+  artist?: string | null;
+  authors?: string[] | null;
+  weekdays?: string[] | null;
+  status?: "ongoing" | "finished" | "rest" | string | null;
+  age?: string | null;
+  tags?: string[] | null;
+  developers?: string[] | null;
+  publishers?: string[] | null;
+  publisher?: string | null;
+  runtime?: number | null;
+  seasons?: number | null;
+  episodes?: number | null;
+  directors?: string[] | null;
+  cast?: string[] | null;
   metacritic?: number | null;
-  platform?: string; // naver|kakao
-  title_ko?: string;
-  title_en?: string;
-  tagline?: string;
-  origin_country?: string[];
-  original_language?: string;
-  stores?: string[];
-  trackCount?: number;
-  pageCount?: number;
-  isbn?: string;
+  platform?: string | null; // naver|kakao
+  title_ko?: string | null;
+  title_en?: string | null;
+  tagline?: string | null;
+  origin_country?: string[] | null;
+  original_language?: string | null;
+  stores?: string[] | null;
+  trackCount?: number | null;
+  pageCount?: number | null;
+  isbn?: string | null;
   [k: string]: unknown;
 };
 

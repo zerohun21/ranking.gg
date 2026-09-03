@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "image.aladin.co.kr" },
       { protocol: "https", hostname: "image-comic.pstatic.net" },
       { protocol: "https", hostname: "shared-comic.pstatic.net" },
+      { protocol: "https", hostname: "cdn.jsdelivr.net" },
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",

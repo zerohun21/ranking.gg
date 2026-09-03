@@ -272,18 +272,31 @@ drop trigger if exists trg_comments_change on public.comments;
 create trigger trg_comments_change after insert or update of is_hidden or delete on public.comments
   for each row execute function public.on_comment_change();
 
--- ───────────── reactions 트리거 ─────────────
+-- ───────────── reactions 트리거 (델타 방식 — 시드된 like_count 와 공존) ─────────────
+create or replace function public.apply_reaction_delta(p_type target_type, p_id integer, p_kind reaction_kind, p_delta integer) returns void language plpgsql as $$
+begin
+  if p_type = 'review' then
+    update public.reviews set like_count = greatest(0, like_count + case when p_kind = 'like' then p_delta else 0 end),
+      dislike_count = greatest(0, dislike_count + case when p_kind = 'dislike' then p_delta else 0 end) where id = p_id;
+  elsif p_type = 'comment' then
+    update public.comments set like_count = greatest(0, like_count + case when p_kind = 'like' then p_delta else 0 end),
+      dislike_count = greatest(0, dislike_count + case when p_kind = 'dislike' then p_delta else 0 end) where id = p_id;
+  elsif p_type = 'post' then
+    update public.posts set like_count = greatest(0, like_count + case when p_kind = 'like' then p_delta else 0 end),
+      dislike_count = greatest(0, dislike_count + case when p_kind = 'dislike' then p_delta else 0 end) where id = p_id;
+  end if;
+end $$;
+
 create or replace function public.on_reaction_change() returns trigger language plpgsql as $$
-declare v_type target_type; v_id integer; v_like integer; v_dislike integer;
 begin
   if public.is_bulk() then return null; end if;
-  v_type := coalesce(new.target_type, old.target_type);
-  v_id := coalesce(new.target_id, old.target_id);
-  select count(*) filter (where kind = 'like'), count(*) filter (where kind = 'dislike') into v_like, v_dislike
-    from public.reactions where target_type = v_type and target_id = v_id;
-  if v_type = 'review' then update public.reviews set like_count = v_like, dislike_count = v_dislike where id = v_id;
-  elsif v_type = 'comment' then update public.comments set like_count = v_like, dislike_count = v_dislike where id = v_id;
-  elsif v_type = 'post' then update public.posts set like_count = v_like, dislike_count = v_dislike where id = v_id;
+  if tg_op = 'INSERT' then
+    perform public.apply_reaction_delta(new.target_type, new.target_id, new.kind, 1);
+  elsif tg_op = 'DELETE' then
+    perform public.apply_reaction_delta(old.target_type, old.target_id, old.kind, -1);
+  elsif tg_op = 'UPDATE' and new.kind <> old.kind then
+    perform public.apply_reaction_delta(old.target_type, old.target_id, old.kind, -1);
+    perform public.apply_reaction_delta(new.target_type, new.target_id, new.kind, 1);
   end if;
   return null;
 end $$;
