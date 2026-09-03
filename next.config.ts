@@ -6,6 +6,8 @@ const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
+    deviceSizes: [640, 828, 1200, 1920],
+    imageSizes: [48, 96, 160, 256, 400],
     remotePatterns: [
       { protocol: "https", hostname: "image.tmdb.org" },
       { protocol: "https", hostname: "media.rawg.io" },

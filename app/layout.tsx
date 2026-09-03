@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </noscript>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='${PRETENDARD}';l.crossOrigin='anonymous';document.head.appendChild(l);})();`,
+            __html: `(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='${PRETENDARD}';l.crossOrigin='anonymous';l.media='print';l.onload=function(){l.media='all'};document.head.appendChild(l);})();`,
           }}
         />
       </head>
