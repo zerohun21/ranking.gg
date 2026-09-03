@@ -50,8 +50,8 @@ export function BattleCard({ battle, loggedIn, size = "md", onVoted, showComment
     const pct = side === "a" ? pa : 100 - pa;
     const won = choice && pct >= 50;
     return (
-      <div className={cn("flex flex-1 flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all", choice === side ? (side === "a" ? "border-win bg-win/10" : "border-lose bg-lose/10") : "border-transparent", !choice && "cursor-pointer hover:bg-accent/60")} onClick={() => vote(side)} role="button" aria-pressed={choice === side}>
-        <Poster src={item.posterUrl} alt={item.title} size="card" className={cn("ring-1 ring-black/10", size === "lg" ? "max-w-[220px]" : "max-w-[140px]")} sizes="220px" />
+      <div className={cn("flex min-w-0 flex-1 flex-col items-center gap-2 overflow-hidden rounded-lg border-2 p-3 transition-all", choice === side ? (side === "a" ? "border-win bg-win/10" : "border-lose bg-lose/10") : "border-transparent", !choice && "cursor-pointer hover:bg-accent/60")} onClick={() => vote(side)} role="button" aria-pressed={choice === side}>
+        <Poster src={item.posterUrl} alt={item.title} size="lg" className={cn("shrink-0 ring-1 ring-black/10", size === "lg" ? "h-[200px] w-[150px] sm:h-[240px] sm:w-[180px]" : "h-[150px] w-[112px]")} sizes="180px" />
         <div className="w-full text-center">
           <div className={cn("line-clamp-1 font-bold", size === "lg" ? "text-base" : "text-sm")}>{item.title}</div>
           <div className="mt-1 flex items-center justify-center gap-2 text-xs text-muted-foreground">

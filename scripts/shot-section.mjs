@@ -1,0 +1,12 @@
+import { chromium } from "@playwright/test";
+const [base, path, text, name, mobile] = process.argv.slice(2);
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: mobile ? { width: 390, height: 900 } : { width: 1280, height: 900 }, colorScheme: "dark" });
+const page = await ctx.newPage();
+await page.goto(base + path, { waitUntil: "networkidle", timeout: 60000 });
+const h = page.getByText(text).first();
+await h.scrollIntoViewIfNeeded();
+await page.waitForTimeout(1200);
+await page.screenshot({ path: `screenshots/${name}.png` });
+console.log("shot", name);
+await browser.close();
