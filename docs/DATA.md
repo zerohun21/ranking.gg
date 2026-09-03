@@ -1,6 +1,6 @@
 # ranking.gg — 데이터 출처 · 수집 통계
 
-마지막 갱신: 2026-09-03 (로컬 Supabase 기준). TMDB/RAWG/도서는 API 키 확보 후 추가 예정 — 아래 "미수집" 참고.
+마지막 갱신: 2026-09-04. 전부 **키 없는 공개 소스**로 수집(TMDB/RAWG 는 선택). 호스팅(Supabase 무료 500MB)에는 합성 별점을 25% 규모(`--scale=0.25 --weeks=4`)로 시드.
 
 ## 요약
 
@@ -9,14 +9,15 @@
 | 네이버 웹툰 | webtoon | 4,140 | 100% | 100% | 100% (starScore) | 1.5분 | ✅ |
 | 카카오웹툰 | webtoon | 3,077 | 100% | 100% | 100% (인기 순위 기반 추정) | 0.3분 | ✅ |
 | Apple Music | music | 4,010 | 100% | 95% (copyright) | 100% (차트 순위/지터 추정) | 2.4분 | ✅ |
-| IMDb 데이터셋 + Wikipedia | movie | (수집 후 갱신) | | | 100% (IMDb 평점·투표수) | | ✅ 무키 대안 |
-| TVmaze | drama | (수집 후 갱신) | | | rating.average | | ✅ 무키 대안 (영문 위주) |
-| Jikan(MyAnimeList) | anime | (수집 후 갱신) | | | MAL score | | ✅ 무키 대안 |
-| SteamSpy + Steam 스토어 | game | (수집 후 갱신) | | | 긍정/부정 비율 | | ✅ 무키 대안 (PC 게임) |
-| Apple Books + Open Library | book | (수집 후 갱신) | | | 일부 실평점, 나머지 추정 | | ✅ 무키 대안 |
+| IMDb 데이터셋 + Wikipedia | movie | 3,500 | 98.9% | 98.9% | 100% (IMDb 평점·투표수) | 58분 | ✅ 무키 대안 (한글 제목 97%) |
+| TVmaze | drama | 3,500 | 100% | 99.8% | 74% (rating.average) | 0.4분 | ✅ 무키 대안 (영문 위주) |
+| AniList GraphQL | anime | 3,500 | 100% | 99.9% | 98% (averageScore) | 3.4분 | ✅ 무키 대안 (Jikan 은 504 잦아 교체) |
+| SteamSpy + Steam 스토어 | game | 3,906 | 100% | 62.5% (상위 2,470 한글 설명) | 100% (긍정/부정 비율) | 73분 (429 대기 포함) | ✅ 무키 대안 (PC 게임) |
+| Apple Books(iTunes) | book | 5,261 | 100% | 94% | 일부 실평점, 나머지 추정 | 3분 | ✅ 무키 대안 |
+| Open Library | book | 2,363 | 100% | 0% | 100% (ratings_average) | (동시) | ✅ 무키 대안 (영문) |
 | TMDB / RAWG / 알라딘 | movie·drama·anime·game·book | – | | | | | 구현 완료, 키 넣으면 `pnpm collect:all -- --source=tmdb,rawg,books` 로 보강 |
 | 유저 카테고리(예시 3개) | ramen/chicken/programming-language | 46 | 39% | | – | | ✅ 시드 |
-| **합계** | | **11,273** | | | | | 목표 15,000+ (TMDB/RAWG 추가 시 ~21k) |
+| **합계** | | **33,303** | | | | | ✅ 목표 15,000+ 달성 (TMDB/RAWG 키 넣으면 더 보강 가능) |
 
 합성 활동 데이터(`pnpm seed:synthetic`, 전부 `profiles.is_seed=true`): 유저 600 · 별점 1,736,974 · 리뷰 30,363 · 댓글 110,055 · 대결 200 · 게시글 80 · 순위 스냅샷 89,906(8주) · 장르 164개.
 
@@ -51,8 +52,8 @@
 ### 드라마 — TVmaze (키 불필요)
 - `GET https://api.tvmaze.com/shows?page=N`(240/페이지, 20 req/10s) 0~41페이지 ≈ 10,000편 → 이미지 있고 `weight ≥ 60` 또는 평점 ≥ 7 인 것 → weight 순 상위 3,500. type 별 kind(tv/variety/animation/documentary), 네트워크/웹채널 → providers(넷플릭스 필터 동작). 표본 수는 weight 지수 스케일 추정.
 
-### 애니 — Jikan v4 (키 불필요)
-- `GET https://api.jikan.moe/v4/top/anime?page=N`(25/페이지, 3 req/s·60 req/min → 1.1s 간격) 120페이지 = 3,000편. Rx(성인) 제외. MAL score/scored_by 를 그대로 사용, 영문 제목 우선 + 일본어 원제.
+### 애니 — AniList GraphQL (키 불필요)
+- `POST https://graphql.anilist.co` `Page(perPage:50) media(type:ANIME, sort:POPULARITY_DESC, isAdult:false)` 70페이지 = 3,500편, 2.1s 간격(분당 30 제한 시). averageScore/10, popularity 를 표본 수로. Jikan(MyAnimeList) 수집기도 남겨 두었으나 21페이지 이후 504 가 잦아 기본 경로에서 제외.
 
 ### 게임 — SteamSpy + Steam 스토어 (키 불필요)
 - `https://steamspy.com/api.php?request=all&page=0..3`(1,000/페이지, 1 req/min) → 리뷰 50개 이상 → 리뷰 수 상위 정렬. 상위 2,500개는 `store.steampowered.com/api/appdetails?appids=&l=koreana&cc=kr`(0.35s 간격, 429 시 60s 대기)로 한글 이름·설명·장르·출시일·메타크리틱. 이미지는 `cdn.cloudflare.steamstatic.com/steam/apps/{appid}/header.jpg` 핫링크. 점수 = 긍정/(긍정+부정)×10.

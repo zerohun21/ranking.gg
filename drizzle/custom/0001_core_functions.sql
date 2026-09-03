@@ -100,7 +100,9 @@ begin
 end $$;
 
 -- ───────────── 랭킹 재계산 (정본) ─────────────
-create or replace function public.recompute_category(p_cat integer) returns void language plpgsql as $$
+-- p_with_hot=false: 별점 트리거 경로(HOT 7일 집계 생략 → 수십 ms). HOT 은 크론/관리자 재계산에서만.
+drop function if exists public.recompute_category(integer);
+create or replace function public.recompute_category(p_cat integer, p_with_hot boolean default true) returns void language plpgsql as $$
 declare
   v_c numeric := 0;
   v_m numeric := 10;
@@ -157,6 +159,7 @@ begin
   from public.contents c where c.id = s.content_id and s.category_id = p_cat and not c.is_approved;
 
   -- HOT (7일, 반감기 3일)
+  if p_with_hot then
   with ev as (
     select r.content_id, 1.0::float8 w, r.created_at at
       from public.ratings r join public.contents c on c.id = r.content_id
@@ -190,6 +193,7 @@ begin
   update public.content_stats s set hot_score = coalesce(a.sc, 0)
   from public.content_stats s2 left join agg a on a.content_id = s2.content_id
   where s.content_id = s2.content_id and s2.category_id = p_cat;
+  end if;
 
   perform public.refresh_category_item_count(p_cat);
 end $$;
@@ -230,7 +234,7 @@ begin
   v_user := coalesce(new.user_id, old.user_id);
   perform public.refresh_content_stats(v_content);
   select category_id into v_cat from public.contents where id = v_content;
-  perform public.recompute_category(v_cat);
+  perform public.recompute_category(v_cat, false);
   update public.profiles p set rating_count = (select count(*) from public.ratings r where r.user_id = v_user) where p.id = v_user;
   return null;
 end $$;

@@ -32,6 +32,9 @@ const argNum = (k: string, d: number) => Number(process.argv.find((a) => a.start
 async function main() {
   const reset = process.argv.includes("--reset");
   const USERS = argNum("users", 600);
+  const SCALE = Number(process.argv.find((a) => a.startsWith("--scale="))?.split("=")[1] ?? 1); // 별점 볼륨 배율 (호스팅 무료 플랜은 0.25 권장)
+  const MAX_RATINGS = Math.round(400 * SCALE);
+  const WEEKS = Number(process.argv.find((a) => a.startsWith("--weeks="))?.split("=")[1] ?? 8);
   const { db, close } = createDirectDb(1);
   const t0 = Date.now();
   const log = (m: string) => console.log(`[${((Date.now() - t0) / 1000).toFixed(0)}s] ${m}`);
@@ -72,7 +75,7 @@ async function main() {
     with u as (select ${seedUsersSql} as ids),
     src as (
       select c.id content_id,
-        least(400, greatest(3, round(ln(1 + coalesce(c.external_score_count, 50)) * 20 * (0.5 + random()))))::int n,
+        least(${MAX_RATINGS}, greatest(3, round(ln(1 + coalesce(c.external_score_count, 50)) * 20 * ${SCALE} * (0.5 + random()))))::int n,
         coalesce(c.external_score / 2.0, 3.5) mean
       from contents c join categories k on k.id = c.category_id where k.is_official
         and not exists (select 1 from ratings r where r.content_id = c.id)
@@ -100,7 +103,7 @@ async function main() {
       limit (select ceil(count(*) * 0.3) from contents where category_id = ${cat.id})`);
     const rows: (typeof reviews.$inferInsert)[] = [];
     for (const c of top) {
-      const n = randInt(3, 15);
+      const n = Math.max(2, Math.round(randInt(3, 15) * Math.min(1, SCALE * 2)));
       // 이 콘텐츠에 별점 준 유저 중에서 고른다 (rating_id 연결)
       const raters = await db.execute<{ id: number; user_id: string; score: string }>(sql`select id, user_id, score from ratings where content_id = ${c.id} order by random() limit ${n}`);
       for (const r of raters) {
@@ -204,7 +207,7 @@ async function main() {
       .values(uc.items.map((it, i) => ({ categoryId: cat.id, slug: slugify(it.title, i + 1), title: it.title, description: it.description ?? null, posterUrl: it.image ?? null, externalSource: "user" as const, externalId: `${uc.slug}-${i + 1}`, externalUrl: it.link ?? null, createdBy: creator, metadata: { kind: "user" } })))
       .onConflictDoNothing();
     await db.execute(sql`
-      with u as (select ${seedUsersSql} ids), src as (select id content_id, 20 + floor(random() * 120)::int n, 2.5 + random() * 2 mean from contents where category_id = ${cat.id}),
+      with u as (select ${seedUsersSql} ids), src as (select id content_id, 20 + floor(random() * 120 * ${SCALE})::int n, 2.5 + random() * 2 mean from contents where category_id = ${cat.id} and not exists (select 1 from ratings r where r.content_id = contents.id)),
       gen as (select s.content_id, (u.ids)[1 + floor(random() * cardinality(u.ids))::int] user_id,
         least(5.0, greatest(0.5, round((s.mean + 0.8 * sqrt(-2 * ln(greatest(random(), 1e-9))) * cos(2 * pi() * random())) * 2) / 2.0)) score,
         now() - (random() * 60) * interval '1 day' created_at from src s, u, generate_series(1, s.n))
@@ -223,7 +226,7 @@ async function main() {
   /* 9) 스냅샷 8주 — 현재 순위에서 랜덤워크. 지난주: ±0~8, 상위 5% 중 일부는 NEW(스냅샷 없음) */
   log("snapshots…");
   await db.execute(sql`delete from rank_snapshots`);
-  for (let w = 1; w <= 8; w++) {
+  for (let w = 1; w <= WEEKS; w++) {
     await db.execute(sql`
       insert into rank_snapshots(content_id, category_id, rank, bayesian_score, tier, snapshot_week)
       select s.content_id, s.category_id,

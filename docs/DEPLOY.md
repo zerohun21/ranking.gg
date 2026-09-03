@@ -78,5 +78,8 @@ psql "$DIRECT_URL" -v ON_ERROR_STOP=1 -c "set session_replication_role = replica
 ```
 단, 네이버 썸네일 URL 이 `http://127.0.0.1:54321/...` 이므로 그 뒤 `pnpm collect -- --source=naver --reset` 로 이미지만 다시 올린다(약 2분).
 
+## 7.5 무료 플랜 용량 주의 (실측)
+Supabase Free 는 DB 500MB. 로컬 시드 그대로(별점 174만 행 ≈ 765MB) 올리면 **읽기 전용으로 잠긴다**. 호스팅에는 `pnpm seed:synthetic -- --scale=0.25 --weeks=4` (별점 ~40만 행) 로 시드하고, 잠겼을 때는 `set default_transaction_read_only = off; truncate ratings ...` 로 정리하면 풀린다. 또 Management API 토큰은 **read-only 가 아닌** 토큰이어야 비번 재설정·Auth 설정이 가능하다.
+
 ## 8. 도메인
 `rangking.gg` 실제 도메인은 .gg 레지스트라(예: Namecheap, 연 $60~80)에서 구매 후 Vercel → Settings → Domains 에 추가하면 된다. 무료 범위에선 `rangking-gg.vercel.app`.
