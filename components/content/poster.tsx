@@ -14,7 +14,8 @@ export function Poster({ src, alt, size = "sm", className, priority, sizes }: { 
           alt={alt}
           fill
           unoptimized={isProxy || isSvg}
-          sizes={sizes ?? (size === "card" ? "(max-width: 640px) 40vw, 200px" : "160px")}
+          sizes={sizes ?? (size === "card" ? "(max-width: 640px) 40vw, 200px" : size === "lg" ? "160px" : size === "md" ? "80px" : "48px")}
+          loading={priority ? undefined : "lazy"}
           className={cn("object-cover", isSvg && "p-2 object-contain")}
           priority={priority}
         />

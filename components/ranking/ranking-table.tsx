@@ -70,7 +70,7 @@ export async function RankingTable({ rows, categorySlug, loggedIn, myRatings, st
               <div className="relative z-10 hidden grid-cols-[36px_40px_52px_minmax(0,2.2fr)_40px_78px_56px_64px_minmax(0,1.3fr)_52px_84px] items-center gap-2 px-3 py-2 pointer-events-none lg:grid">
                 <span className={cn("text-lg font-extrabold tabular", (r.rank ?? 99) <= 3 ? "text-tier-s" : "text-foreground")}>{showRank ? r.rank ?? "–" : startIndex + i + 1}</span>
                 <RankDelta delta={r.rankDelta} prevRank={r.prevRank} />
-                <Poster src={r.posterUrl} alt={title} size="sm" />
+                <Poster src={r.posterUrl} alt={title} size="sm" priority={i < 4} sizes="48px" />
                 <div className="min-w-0">
                   <div className="truncate text-sm font-bold">{title}</div>
                   <div className="truncate text-xs text-muted-foreground">{metaLine(r, locale)}</div>
@@ -92,7 +92,7 @@ export async function RankingTable({ rows, categorySlug, loggedIn, myRatings, st
                   <span className={cn("text-base font-extrabold tabular", (r.rank ?? 99) <= 3 ? "text-tier-s" : "")}>{showRank ? r.rank ?? "–" : startIndex + i + 1}</span>
                   <RankDelta delta={r.rankDelta} prevRank={r.prevRank} className="text-[10px]" />
                 </div>
-                <Poster src={r.posterUrl} alt={title} size="sm" />
+                <Poster src={r.posterUrl} alt={title} size="sm" priority={i < 4} sizes="48px" />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-bold">{title}</div>
                   <div className="truncate text-[11px] text-muted-foreground">{metaLine(r, locale)}</div>

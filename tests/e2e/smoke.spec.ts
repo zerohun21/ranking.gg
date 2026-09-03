@@ -24,10 +24,13 @@ test.describe("ranking.gg smoke", () => {
       const rows = page.locator("main ul > li");
       await expect(rows).toHaveCount(50, { timeout: 20000 });
       if (!isMobile) {
-        await page.getByRole("button", { name: "Tier S" }).first().click();
-        await expect(page).toHaveURL(/tier=S/);
+        await page.waitForLoadState("networkidle"); // 하이드레이션 대기
+        const tierS = page.getByRole("button", { name: "Tier S" }).first();
+        await expect(tierS).toHaveAttribute("aria-pressed", "false");
+        await tierS.click();
+        await expect(page).toHaveURL(/tier=S/, { timeout: 15000 });
         await page.getByRole("button", { name: /티어 보드|Tier board/ }).click();
-        await expect(page).toHaveURL(/view=board/);
+        await expect(page).toHaveURL(/view=board/, { timeout: 15000 });
       }
     });
   }

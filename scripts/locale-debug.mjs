@@ -1,0 +1,14 @@
+import { chromium } from "@playwright/test";
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ locale: "ko-KR" });
+const page = await ctx.newPage();
+page.on("console", (m) => { if (m.type() === "error") console.log("console.error:", m.text().slice(0, 200)); });
+page.on("response", (r) => { if (r.request().method() === "POST") console.log("POST", r.status(), r.url().slice(0, 80), r.headers()["set-cookie"] ? "set-cookie:" + r.headers()["set-cookie"].slice(0, 60) : "(no set-cookie)"); });
+await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+console.log("lang before:", await page.getAttribute("html", "lang"));
+await page.locator('header button[aria-label="언어"], header button[aria-label="Language"]').click();
+await page.waitForTimeout(3000);
+console.log("lang after click:", await page.getAttribute("html", "lang"), "cookies:", (await ctx.cookies()).map((c) => `${c.name}=${c.value.slice(0, 10)}`).join(" "));
+await page.reload({ waitUntil: "networkidle" });
+console.log("lang after reload:", await page.getAttribute("html", "lang"));
+await browser.close();

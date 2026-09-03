@@ -25,7 +25,8 @@ export function HeaderControls({ user }: { user: CurrentUser | null }) {
     const next: Locale = locale === "ko" ? "en" : "ko";
     start(async () => {
       await setLocale(next);
-      router.refresh();
+      // prod 에서 router.refresh() 만으로는 <html lang> 과 메시지가 갱신되지 않아 전체 새로고침
+      window.location.reload();
     });
   };
   const logout = async () => {

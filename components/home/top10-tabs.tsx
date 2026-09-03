@@ -42,11 +42,11 @@ export function Top10Tabs({ categories, data }: { categories: Cat[]; data: Recor
       </div>
       <ScrollArea className="w-full whitespace-nowrap">
         <div className="flex gap-3 pb-3">
-          {rows.map((r) => {
+          {rows.map((r, i) => {
             const title = displayTitle(r, locale);
             return (
               <Link key={r.id} href={contentHref(active, r.slug)} className="group relative w-[140px] shrink-0 sm:w-[160px]">
-                <Poster src={r.posterUrl} alt={title} size="card" className="h-[186px] sm:h-[213px] ring-1 ring-black/10 transition-transform group-hover:-translate-y-1" />
+                <Poster src={r.posterUrl} alt={title} size="card" className="h-[186px] sm:h-[213px] ring-1 ring-black/10 transition-transform group-hover:-translate-y-1" priority={i < 3} sizes="160px" />
                 <span className={cn("absolute -left-1 -top-2 text-5xl font-black italic leading-none drop-shadow-[0_2px_0_rgba(0,0,0,.6)] tabular", (r.rank ?? 99) <= 3 ? "text-tier-s" : "text-white")}>{r.rank}</span>
                 <TierBadge tier={r.tier} size="sm" className="absolute right-1.5 top-1.5" />
                 <div className="mt-2 space-y-0.5 whitespace-normal">

@@ -3,7 +3,8 @@ import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { GlobalCommandPalette } from "@/components/search/command-palette";
+import dynamic from "next/dynamic";
+const GlobalCommandPalette = dynamic(() => import("@/components/search/command-palette").then((m) => m.GlobalCommandPalette), { ssr: false });
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
