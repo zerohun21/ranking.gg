@@ -4,6 +4,15 @@
 - Node 20+, pnpm 10+, gh CLI(로그인), Vercel 계정
 - Supabase 프로젝트(무료), TMDB API 키, RAWG API 키, (선택) Google Books 또는 알라딘 TTB 키
 
+## 0.5 (선택) 로컬 Supabase 로 전부 돌리기 — 계정 없이
+```bash
+open -a Docker                      # Docker Desktop 실행
+pnpm supabase start                 # supabase/config.toml (anonymous sign-ins ON, email confirm OFF 로 설정됨)
+```
+출력된 `API_URL`(54321) / `ANON_KEY` / `SERVICE_ROLE_KEY` / `DB_URL`(54322) 을 `.env.local` 에 넣으면 아래 절차가 그대로 동작한다.
+`pnpm supabase status` 로 다시 볼 수 있고, `pnpm supabase stop` 으로 내린다. Studio 는 http://127.0.0.1:54323.
+※ 로컬에서 수집한 네이버 썸네일 URL 은 `http://127.0.0.1:54321/storage/...` 로 저장되므로, 호스팅 Supabase 로 옮길 때는 `pnpm collect -- --source=naver --reset` 으로 다시 수집(업로드)한다.
+
 ## 1. 환경 변수
 ```bash
 cp .env.example .env.local   # 값 채우기
