@@ -1,0 +1,1 @@
+ALTER TYPE "public"."external_source" ADD VALUE 'imdb' BEFORE 'user';

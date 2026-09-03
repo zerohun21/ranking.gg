@@ -7,7 +7,8 @@ import path from "node:path";
 import { parseArgs, runCollector } from "./collect/common";
 import { COLLECTORS, type SourceKey } from "./collect/index";
 
-const ORDER: SourceKey[] = ["naver", "kakao", "tmdb", "rawg", "apple", "books"];
+// 키 없는 소스 우선. TMDB/RAWG/books 는 키가 있을 때만 의미 있음
+const ORDER: SourceKey[] = ["naver", "kakao", "apple", "anilist", "tvmaze", "steam", "books-alt", "imdb-wiki", "tmdb", "rawg", "books"];
 
 async function main() {
   const args = parseArgs();

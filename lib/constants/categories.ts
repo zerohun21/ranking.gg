@@ -30,28 +30,33 @@ export const PLATFORM_FILTERS: Record<string, { key: string; label: string }[]> 
     { key: "Coupang Play", label: "쿠팡플레이" },
     { key: "Watcha", label: "왓챠" },
   ],
-  movie: [
-    { key: "Netflix", label: "넷플릭스" },
-    { key: "Disney Plus", label: "디즈니+" },
-    { key: "TVING", label: "티빙" },
-    { key: "wavve", label: "웨이브" },
-    { key: "Coupang Play", label: "쿠팡플레이" },
-    { key: "Watcha", label: "왓챠" },
-  ],
-  anime: [
-    { key: "Netflix", label: "넷플릭스" },
-    { key: "Laftel", label: "라프텔" },
-    { key: "Disney Plus", label: "디즈니+" },
-  ],
   webtoon: [
     { key: "naver", label: "네이버" },
     { key: "kakao", label: "카카오" },
   ],
   game: [
     { key: "PC", label: "PC" },
+    { key: "Mac", label: "Mac" },
+    { key: "Linux", label: "Linux" },
     { key: "PlayStation", label: "PS" },
     { key: "Xbox", label: "Xbox" },
     { key: "Nintendo Switch", label: "Switch" },
     { key: "Mobile", label: "모바일" },
+  ],
+  anime: [
+    { key: "TV", label: "TV" },
+    { key: "Movie", label: "극장판" },
+    { key: "OVA", label: "OVA" },
+    { key: "ONA", label: "ONA" },
+    { key: "Netflix", label: "넷플릭스" },
+  ],
+  book: [
+    { key: "Apple Books", label: "Apple Books" },
+    { key: "Open Library", label: "Open Library" },
+  ],
+  movie: [
+    { key: "iTunes", label: "iTunes" },
+    { key: "Netflix", label: "넷플릭스" },
+    { key: "Disney Plus", label: "디즈니+" },
   ],
 };

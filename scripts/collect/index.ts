@@ -5,6 +5,12 @@ import { tmdbCollectors } from "./tmdb";
 import { rawgCollector } from "./rawg";
 import { appleCollector } from "./apple-music";
 import { booksCollector } from "./books";
+import { jikanCollector } from "./jikan";
+import { tvmazeCollector } from "./tvmaze";
+import { steamCollector } from "./steam";
+import { booksAltCollector } from "./books-alt";
+import { imdbWikiCollector } from "./imdb-wiki";
+import { anilistCollector } from "./anilist";
 
 export const COLLECTORS = {
   naver: [naverCollector],
@@ -16,6 +22,12 @@ export const COLLECTORS = {
   rawg: [rawgCollector],
   apple: [appleCollector],
   books: [booksCollector],
+  jikan: [jikanCollector],
+  tvmaze: [tvmazeCollector],
+  steam: [steamCollector],
+  "books-alt": [booksAltCollector],
+  "imdb-wiki": [imdbWikiCollector],
+  anilist: [anilistCollector],
 };
 export type SourceKey = keyof typeof COLLECTORS;
 

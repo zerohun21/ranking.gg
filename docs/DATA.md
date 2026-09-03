@@ -9,11 +9,12 @@
 | 네이버 웹툰 | webtoon | 4,140 | 100% | 100% | 100% (starScore) | 1.5분 | ✅ |
 | 카카오웹툰 | webtoon | 3,077 | 100% | 100% | 100% (인기 순위 기반 추정) | 0.3분 | ✅ |
 | Apple Music | music | 4,010 | 100% | 95% (copyright) | 100% (차트 순위/지터 추정) | 2.4분 | ✅ |
-| TMDB 영화 | movie | – | | | | | ⏳ `TMDB_API_KEY` 필요 |
-| TMDB 드라마/예능 | drama | – | | | | | ⏳ `TMDB_API_KEY` 필요 |
-| TMDB 애니 | anime | – | | | | | ⏳ `TMDB_API_KEY` 필요 |
-| RAWG 게임 | game | – | | | | | ⏳ `RAWG_API_KEY` 필요 |
-| 알라딘 / Google Books | book | – | | | | | ⏳ 키 필요 (Google Books 익명 쿼터 0) |
+| IMDb 데이터셋 + Wikipedia | movie | (수집 후 갱신) | | | 100% (IMDb 평점·투표수) | | ✅ 무키 대안 |
+| TVmaze | drama | (수집 후 갱신) | | | rating.average | | ✅ 무키 대안 (영문 위주) |
+| Jikan(MyAnimeList) | anime | (수집 후 갱신) | | | MAL score | | ✅ 무키 대안 |
+| SteamSpy + Steam 스토어 | game | (수집 후 갱신) | | | 긍정/부정 비율 | | ✅ 무키 대안 (PC 게임) |
+| Apple Books + Open Library | book | (수집 후 갱신) | | | 일부 실평점, 나머지 추정 | | ✅ 무키 대안 |
+| TMDB / RAWG / 알라딘 | movie·drama·anime·game·book | – | | | | | 구현 완료, 키 넣으면 `pnpm collect:all -- --source=tmdb,rawg,books` 로 보강 |
 | 유저 카테고리(예시 3개) | ramen/chicken/programming-language | 46 | 39% | | – | | ✅ 시드 |
 | **합계** | | **11,273** | | | | | 목표 15,000+ (TMDB/RAWG 추가 시 ~21k) |
 
@@ -41,6 +42,23 @@
 - RSS `https://rss.marketingtools.apple.com/api/v2/{kr,us}/music/most-played/100/albums.json` (구 도메인 폴백 포함).
 - iTunes Search `https://itunes.apple.com/search?term=…&country=kr&media=music&entity=album&limit=200&lang=ko_kr`. **kr 스토어는 영문 term(IU, kpop) 이 0건** → 한글 아티스트/장르 키워드 60개 + `lang=ko_kr`; us 스토어는 영문 20개. 요청 간 3초 간격(약 20 req/min 제한).
 - artwork `100x100bb` → `600x600bb`. RSS 순위 1~100 → 9.0~7.5, 검색 결과 7.0±지터(id 해시) — 전부 `score_estimated`.
+
+### 영화 — IMDb 공개 데이터셋 + Wikipedia (키 불필요)
+- `https://datasets.imdbws.com/title.ratings.tsv.gz`(7MB) + `title.basics.tsv.gz`(190MB gz, 1,200만 행 스트리밍 파싱 30초). `titleType=movie`, `numVotes ≥ 25,000` → 7,275편 중 투표수 상위 3,500편. IMDb 데이터셋은 개인·비상업 용도 라이선스.
+- Wikipedia **Action API 배치**: `action=query&prop=extracts|pageimages|langlinks|pageprops&exintro&explaintext&piprop=original|thumbnail&pilicense=any&lllang=ko&redirects=1&titles=A|B|…` — 영화 6편(후보 제목 18개)당 1요청. 후보 `"{title} ({year} film)" → "{title} (film)" → "{title}"` 중 첫 번째 존재하는 문서(동음이의 제외, 인트로에 film/movie 포함)를 채택. `pilicense=any` 가 없으면 비자유 포스터가 빠져 포스터 0% 가 됨(실측). 동시 요청은 429 → 순차 + 250ms 간격.
+- 결과: 한글 제목(kowiki langlink) · 포스터(upload.wikimedia.org) · 영문 인트로. `external_score = IMDb 평점`, `external_score_count = 투표수`.
+
+### 드라마 — TVmaze (키 불필요)
+- `GET https://api.tvmaze.com/shows?page=N`(240/페이지, 20 req/10s) 0~41페이지 ≈ 10,000편 → 이미지 있고 `weight ≥ 60` 또는 평점 ≥ 7 인 것 → weight 순 상위 3,500. type 별 kind(tv/variety/animation/documentary), 네트워크/웹채널 → providers(넷플릭스 필터 동작). 표본 수는 weight 지수 스케일 추정.
+
+### 애니 — Jikan v4 (키 불필요)
+- `GET https://api.jikan.moe/v4/top/anime?page=N`(25/페이지, 3 req/s·60 req/min → 1.1s 간격) 120페이지 = 3,000편. Rx(성인) 제외. MAL score/scored_by 를 그대로 사용, 영문 제목 우선 + 일본어 원제.
+
+### 게임 — SteamSpy + Steam 스토어 (키 불필요)
+- `https://steamspy.com/api.php?request=all&page=0..3`(1,000/페이지, 1 req/min) → 리뷰 50개 이상 → 리뷰 수 상위 정렬. 상위 2,500개는 `store.steampowered.com/api/appdetails?appids=&l=koreana&cc=kr`(0.35s 간격, 429 시 60s 대기)로 한글 이름·설명·장르·출시일·메타크리틱. 이미지는 `cdn.cloudflare.steamstatic.com/steam/apps/{appid}/header.jpg` 핫링크. 점수 = 긍정/(긍정+부정)×10.
+
+### 도서 — Apple Books + Open Library (키 불필요)
+- Apple RSS `kr,us/books/top-paid|top-free/100` + iTunes Search `media=ebook`(kr 한글 키워드 60개 + us 15개, `averageUserRating/userRatingCount` 있으면 실평점) + Open Library `search.json?subject=…&sort=rating`(영문, ratings_average/ratings_count, 표지 `covers.openlibrary.org`).
 
 ### TMDB (키 필요) — 구현 완료, 키 대기
 - discover: 영화 popularity(150p, vote≥100) + vote_average(25p, vote≥1000) + KR(25p); 드라마 popularity(125p, vote≥50, 애니·뉴스 제외) + KR(40p, vote≥30) + top(15p); 애니 `with_genres=16&with_origin_country=JP` TV 75p + 영화 25p(스펙의 "모든 애니 영화" 대신 JP 원산으로 제한 — 서양 애니메이션은 영화 카테고리에 남김).

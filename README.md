@@ -46,5 +46,5 @@ tests/unit           ranking · pg-parity(pglite) · moderation · slug        t
 - Postgres 트리거가 별점/댓글/반응/투표/신고 시 `content_stats` 를 즉시 갱신하고 카테고리를 재계산
 
 ## 데이터 출처
-TMDB · RAWG · 네이버웹툰 · 카카오웹툰 · Apple Music(RSS/iTunes Search) · 알라딘/Google Books.
+키 없이: 네이버웹툰 · 카카오웹툰 · Apple Music/Books(RSS·iTunes Search) · Jikan(MyAnimeList) · TVmaze · SteamSpy+Steam · IMDb 데이터셋+Wikipedia · Open Library. 키 있으면 추가: TMDB · RAWG · 알라딘/Google Books. 배포는 [docs/DEPLOY.md](docs/DEPLOY.md).
 *This product uses the TMDB API but is not endorsed or certified by TMDB.*

@@ -25,6 +25,13 @@ export const externalSourceEnum = pgEnum("external_source", [
   "apple",
   "google_books",
   "aladin",
+  "jikan",
+  "tvmaze",
+  "steam",
+  "itunes",
+  "openlibrary",
+  "imdb",
+  "anilist",
   "user",
 ]);
 export const tierEnum = pgEnum("tier", ["S", "A", "B", "C", "D"]);
