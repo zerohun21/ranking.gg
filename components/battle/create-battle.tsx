@@ -59,7 +59,7 @@ export function CreateBattleForm({ loggedIn }: { loggedIn: boolean }) {
   const [pending, start] = useTransition();
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-1 text-sm font-bold">{t("create")}</h3>
+      <h2 className="mb-1 text-sm font-bold">{t("create")}</h2>
       <p className="mb-3 text-xs text-muted-foreground">{t("createDesc")}</p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <Picker label={t("pickA")} value={a} onPick={setA} />

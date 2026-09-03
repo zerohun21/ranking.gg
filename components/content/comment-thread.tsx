@@ -137,7 +137,7 @@ export function CommentThread({ targetType, targetId, viewer, initial, autoLoad 
 
   return (
     <div className={cn(!compact && "rounded-lg border border-border bg-card p-4")}>
-      {!compact && <h3 className="mb-2 text-sm font-bold">{t("comments")} <span className="text-muted-foreground tabular">{rows.length}</span></h3>}
+      {!compact && <h2 className="mb-2 text-sm font-bold">{t("comments")} <span className="text-muted-foreground tabular">{rows.length}</span></h2>}
       <ul className="divide-y divide-border">
         {roots.map((c) => (
           <Item key={c.id} c={c} depth={0} />

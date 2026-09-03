@@ -203,7 +203,7 @@ export default async function ContentPage({ params }: Props) {
           {sameGenre.length > 0 && <SideList title={t("content.sameGenre")} rows={sameGenre} categorySlug={cat.slug} />}
           {battleRows.length > 0 && (
             <section className="rounded-lg border border-border bg-card">
-              <h3 className="border-b border-border px-4 py-2.5 text-sm font-bold">{t("content.battlesWith")}</h3>
+              <h2 className="border-b border-border px-4 py-2.5 text-sm font-bold">{t("content.battlesWith")}</h2>
               <ul className="divide-y divide-border">
                 {battleRows.map(({ battle: b, aTitle, bTitle }) => {
                   const total = b.votesA + b.votesB || 1;
@@ -226,7 +226,7 @@ export default async function ContentPage({ params }: Props) {
           )}
           {postRows.length > 0 && (
             <section className="rounded-lg border border-border bg-card">
-              <h3 className="border-b border-border px-4 py-2.5 text-sm font-bold">{t("content.posts")}</h3>
+              <h2 className="border-b border-border px-4 py-2.5 text-sm font-bold">{t("content.posts")}</h2>
               <ul className="divide-y divide-border">
                 {postRows.map((p) => (
                   <li key={p.id}>
@@ -248,7 +248,7 @@ export default async function ContentPage({ params }: Props) {
 function SideList({ title, rows, categorySlug }: { title: string; rows: { id: number; slug: string; title: string; posterUrl: string | null; rank: number | null; tier: "S" | "A" | "B" | "C" | "D" | null; bayesianScore: string }[]; categorySlug: string }) {
   return (
     <section className="rounded-lg border border-border bg-card">
-      <h3 className="border-b border-border px-4 py-2.5 text-sm font-bold">{title}</h3>
+      <h2 className="border-b border-border px-4 py-2.5 text-sm font-bold">{title}</h2>
       <ul className="divide-y divide-border">
         {rows.map((r) => (
           <li key={r.id}>

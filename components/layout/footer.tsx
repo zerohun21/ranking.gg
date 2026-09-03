@@ -13,14 +13,14 @@ export async function Footer() {
         </div>
         <div className="space-y-1">
           <div className="font-semibold text-white">{t("dataSources")}</div>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-1">
-            <li><a className="hover:text-white" href="https://www.themoviedb.org/" target="_blank" rel="noreferrer">TMDB</a></li>
-            <li><a className="hover:text-white" href="https://rawg.io/" target="_blank" rel="noreferrer">RAWG</a></li>
-            <li><a className="hover:text-white" href="https://comic.naver.com/" target="_blank" rel="noreferrer">네이버웹툰</a></li>
-            <li><a className="hover:text-white" href="https://webtoon.kakao.com/" target="_blank" rel="noreferrer">카카오웹툰</a></li>
-            <li><a className="hover:text-white" href="https://music.apple.com/" target="_blank" rel="noreferrer">Apple Music</a></li>
-            <li><a className="hover:text-white" href="https://books.google.com/" target="_blank" rel="noreferrer">Google Books</a></li>
-            <li><a className="hover:text-white" href="https://www.aladin.co.kr/" target="_blank" rel="noreferrer">알라딘</a></li>
+          <ul className="grid grid-cols-2 gap-x-6 sm:grid-cols-1">
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://www.themoviedb.org/" target="_blank" rel="noreferrer">TMDB</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://rawg.io/" target="_blank" rel="noreferrer">RAWG</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://comic.naver.com/" target="_blank" rel="noreferrer">네이버웹툰</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://webtoon.kakao.com/" target="_blank" rel="noreferrer">카카오웹툰</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://music.apple.com/" target="_blank" rel="noreferrer">Apple Music</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://books.google.com/" target="_blank" rel="noreferrer">Google Books</a></li>
+            <li><a className="inline-block py-1.5 hover:text-white" href="https://www.aladin.co.kr/" target="_blank" rel="noreferrer">알라딘</a></li>
           </ul>
         </div>
       </div>

@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "2mb" },
   },
+  htmlLimitedBots: /Chrome-Lighthouse|Googlebot|bingbot|Yeti|Daum|Twitterbot|facebookexternalhit|Slackbot|Discordbot|LinkedInBot|Applebot|kakaotalk-scrap/i,
 };
 
 export default withNextIntl(nextConfig);

@@ -91,24 +91,18 @@ export async function RankingTable({ rows, categorySlug, loggedIn, myRatings, st
                     <PlatformIcons metadata={r.metadata} categorySlug={categorySlug} />
                   </span>
                 </div>
-                {/* 모바일 우측 묶음 */}
-                <div className="flex flex-col items-end gap-1 lg:hidden">
-                  <TierBadge tier={r.tier} size="sm" />
-                  <Score score={r.bayesianScore} size="sm" showStars={false} />
-                  <span className="pointer-events-auto">
-                    <QuickRate contentId={r.id} title={title} loggedIn={loggedIn} initial={myRatings?.get(r.id) ?? null} className="h-6 px-1.5 text-[10px]" />
+                {/* 모바일: 우측 세로 묶음 / lg: display:contents 로 풀려 각각 그리드 셀이 됨 */}
+                <div className="flex flex-col items-end gap-1 lg:contents">
+                  <span className="lg:order-none"><TierBadge tier={r.tier} size="sm" className="lg:h-8 lg:w-8 lg:text-sm" /></span>
+                  <span><Score score={r.bayesianScore} size="sm" showStars={false} className="lg:hidden" /><Score score={r.bayesianScore} size="md" className="hidden lg:inline-flex" /></span>
+                  <span className="hidden text-right text-sm tabular text-muted-foreground lg:block">{formatCount(r.ratingCount, locale)}</span>
+                  <span className="hidden lg:block"><DistBar dist={r.dist} /></span>
+                  <span className="hidden truncate text-xs text-muted-foreground lg:block">{r.bestComment ? `“${r.bestComment}”` : ""}</span>
+                  <span className={cn("hidden text-right text-sm font-semibold tabular lg:block", wr == null ? "text-muted-foreground" : wr >= 50 ? "text-win" : "text-lose")}>{wr == null ? "–" : `${wr}%`}</span>
+                  <span className="pointer-events-auto flex justify-end">
+                    <QuickRate contentId={r.id} title={title} loggedIn={loggedIn} initial={myRatings?.get(r.id) ?? null} className="h-6 px-1.5 text-[10px] lg:h-7 lg:px-2 lg:text-xs" />
                   </span>
                 </div>
-                {/* lg 전용 컬럼 */}
-                <span className="hidden lg:block"><TierBadge tier={r.tier} size="md" /></span>
-                <span className="hidden lg:block"><Score score={r.bayesianScore} size="md" /></span>
-                <span className="hidden text-right text-sm tabular text-muted-foreground lg:block">{formatCount(r.ratingCount, locale)}</span>
-                <span className="hidden lg:block"><DistBar dist={r.dist} /></span>
-                <span className="hidden truncate text-xs text-muted-foreground lg:block">{r.bestComment ? `“${r.bestComment}”` : ""}</span>
-                <span className={cn("hidden text-right text-sm font-semibold tabular lg:block", wr == null ? "text-muted-foreground" : wr >= 50 ? "text-win" : "text-lose")}>{wr == null ? "–" : `${wr}%`}</span>
-                <span className="pointer-events-auto hidden justify-end lg:flex">
-                  <QuickRate contentId={r.id} title={title} loggedIn={loggedIn} initial={myRatings?.get(r.id) ?? null} />
-                </span>
               </div>
             </li>
           );

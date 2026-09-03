@@ -80,7 +80,7 @@ export function HeaderControls({ user }: { user: CurrentUser | null }) {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button size="sm" className="ml-1 h-8 bg-[#5383e8] px-3 text-xs font-bold hover:bg-[#4a75d0]" nativeButton={false} render={<Link href="/login" />}>
+        <Button size="sm" className="ml-1 h-8 bg-primary px-3 text-xs font-bold hover:bg-primary/90" nativeButton={false} render={<Link href="/login" />}>
           {t("login")}
         </Button>
       )}

@@ -23,7 +23,8 @@ export default async function HomePage() {
     getBattleCards({ featured: true, random: true, n: 3, viewerId: user?.id }),
     getLiveReviews(20),
   ]);
-  const data = Object.fromEntries(cats.map((c, i) => [c.slug, tops[i]]));
+  // 클라이언트로 넘기는 페이로드 최소화 (metadata 등 제외)
+  const data = Object.fromEntries(cats.map((c, i) => [c.slug, tops[i].map((r) => ({ id: r.id, slug: r.slug, title: r.title, titleOriginal: r.titleOriginal, posterUrl: r.posterUrl, rank: r.rank, prevRank: r.prevRank, rankDelta: r.rankDelta, tier: r.tier, bayesianScore: r.bayesianScore, ratingCount: r.ratingCount }))]));
 
   return (
     <div className="space-y-8">
@@ -56,7 +57,7 @@ export default async function HomePage() {
       <section className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-8 text-center">
         <h2 className="text-lg font-extrabold">{t("createCta")}</h2>
         <p className="text-sm text-muted-foreground">{t("createCtaDesc")}</p>
-        <Button nativeButton={false} render={<Link href="/create" />} className="bg-[#5383e8] hover:bg-[#4a75d0]">
+        <Button nativeButton={false} render={<Link href="/create" />} className="bg-primary hover:bg-primary/90">
           <Plus className="mr-1 h-4 w-4" /> {t("createCta")}
         </Button>
       </section>

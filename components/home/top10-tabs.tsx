@@ -6,13 +6,13 @@ import { TierBadge } from "@/components/ranking/tier-badge";
 import { RankDelta } from "@/components/ranking/rank-delta";
 import { Poster } from "@/components/content/poster";
 import { contentHref, displayTitle, formatScore } from "@/lib/format";
-import type { RankingRow } from "@/lib/db/queries/ranking";
+export type Top10Row = { id: number; slug: string; title: string; titleOriginal: string | null; posterUrl: string | null; rank: number | null; prevRank: number | null; rankDelta: number | null; tier: "S" | "A" | "B" | "C" | "D" | null; bayesianScore: string; ratingCount: number };
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type Cat = { slug: string; nameKo: string; nameEn: string; icon: string; color: string };
 
-export function Top10Tabs({ categories, data }: { categories: Cat[]; data: Record<string, RankingRow[]> }) {
+export function Top10Tabs({ categories, data }: { categories: Cat[]; data: Record<string, Top10Row[]> }) {
   const t = useTranslations("home");
   const locale = useLocale();
   const [active, setActive] = useState(categories[0]?.slug);

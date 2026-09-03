@@ -37,11 +37,14 @@ test.describe("ranking.gg smoke", () => {
 
   test("search autocomplete + results page", async ({ page }) => {
     await page.goto("/search");
-    const input = page.getByRole("searchbox").or(page.getByPlaceholder(/검색어|Type to search/)).first();
+    await page.waitForLoadState("networkidle"); // 하이드레이션 후 입력 (controlled input)
+    const input = page.locator('main form[role="search"] input').first(); // 헤더(모바일에서 숨김)가 아닌 본문 검색창
+    await input.click();
     await input.fill("사랑");
+    await expect(input).toHaveValue("사랑");
     await expect(page.getByRole("listbox")).toBeVisible({ timeout: 10000 });
     await input.press("Enter");
-    await expect(page).toHaveURL(/\/search\?q=/);
+    await expect(page).toHaveURL(/\/search\?q=/, { timeout: 15000 });
     await expect(page.getByRole("heading", { level: 1 })).toContainText("사랑");
   });
 

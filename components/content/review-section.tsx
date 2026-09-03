@@ -120,7 +120,7 @@ export function ReviewSection({ contentId, initial, viewer, myRating, myReview }
       {/* 작성 폼 */}
       <div className="rounded-lg border border-border bg-card p-4">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-bold">{myReview && !editing ? tc("you") + " · " + tc("reviews") : t("writeReview")}</h3>
+          <h2 className="text-sm font-bold">{myReview && !editing ? tc("you") + " · " + tc("reviews") : t("writeReview")}</h2>
           {myRating ? <Stars value={myRating} size={14} /> : <span className="text-xs text-muted-foreground">{t("reviewNeedsRating")}</span>}
         </div>
         {myReview && !editing ? (
@@ -160,7 +160,7 @@ export function ReviewSection({ contentId, initial, viewer, myRating, myReview }
 
       {/* 정렬 */}
       <div className="flex items-center gap-1">
-        <h3 className="mr-auto text-sm font-bold">{tc("reviews")}</h3>
+        <h2 className="mr-auto text-sm font-bold">{tc("reviews")}</h2>
         {SORTS.map((s) => (
           <button key={s} type="button" onClick={() => changeSort(s)} className={cn("rounded-md px-2 py-1 text-xs font-semibold", sort === s ? "bg-primary text-white" : "text-muted-foreground hover:bg-accent")}>
             {sortLabel[s]}

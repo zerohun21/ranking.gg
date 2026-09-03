@@ -1,0 +1,17 @@
+import { chromium, devices } from "@playwright/test";
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ ...devices["Pixel 7"], locale: "ko-KR" });
+const page = await ctx.newPage();
+page.on("console", (m) => { if (m.type() === "error") console.log("console.error:", m.text().slice(0, 200)); });
+page.on("pageerror", (e) => console.log("pageerror:", e.message.slice(0, 200)));
+await page.goto("http://localhost:3000/search", { waitUntil: "networkidle" });
+const input = page.getByPlaceholder(/검색어/).first();
+await input.click();
+await input.fill("사랑");
+console.log("value:", await input.inputValue());
+await page.waitForTimeout(1500);
+console.log("listbox visible:", await page.getByRole("listbox").isVisible().catch(() => false));
+await input.press("Enter");
+await page.waitForTimeout(2000);
+console.log("url after Enter:", page.url());
+await browser.close();

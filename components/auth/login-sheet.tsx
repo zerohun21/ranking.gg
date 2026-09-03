@@ -17,7 +17,7 @@ export function LoginSheet({ open, onOpenChange, title }: { open: boolean; onOpe
           <DialogTitle>{title ?? t("loginToRate")}</DialogTitle>
           <DialogDescription>{t("loginSheetDesc")}</DialogDescription>
         </DialogHeader>
-        <GuestLoginButton size="lg" className="w-full bg-[#5383e8] hover:bg-[#4a75d0]" onDone={() => onOpenChange(false)} />
+        <GuestLoginButton size="lg" className="w-full bg-primary hover:bg-primary/90" onDone={() => onOpenChange(false)} />
         <p className="text-center text-xs text-muted-foreground">{t("guestDesc")}</p>
         {showEmail ? (
           <EmailAuthForm mode="login" onDone={() => onOpenChange(false)} />

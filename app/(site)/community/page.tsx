@@ -55,7 +55,7 @@ export async function Toolbar({ base, tag, sort, writeHref }: { base: string; ta
         </Link>
       ))}
       {writeHref && (
-        <Link href={writeHref} className="ml-auto rounded-md bg-[#5383e8] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#4a75d0]">
+        <Link href={writeHref} className="ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-primary/90">
           ✏️ {t("write")}
         </Link>
       )}

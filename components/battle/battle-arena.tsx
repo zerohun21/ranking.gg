@@ -54,7 +54,7 @@ export function BattleArena({ initial, loggedIn, categorySlug }: { initial: Batt
         }}
       />
       <div className="flex justify-center">
-        <Button size="lg" onClick={next} className={voted ? "animate-pulse bg-[#5383e8] hover:bg-[#4a75d0]" : ""} variant={voted ? "default" : "outline"}>
+        <Button size="lg" onClick={next} className={voted ? "animate-pulse bg-primary hover:bg-primary/90" : ""} variant={voted ? "default" : "outline"}>
           {t("next")} <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </div>

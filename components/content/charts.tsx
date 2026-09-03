@@ -8,7 +8,7 @@ export function DistributionChart({ dist, mine }: { dist: number[]; mine: number
   const total = dist.reduce((a, b) => a + b, 0) || 1;
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-2 text-sm font-bold">{t("distribution")}</h3>
+      <h2 className="mb-2 text-sm font-bold">{t("distribution")}</h2>
       <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
@@ -39,7 +39,7 @@ export function RankHistoryChart({ history, current }: { history: { week: string
   const hi = Math.max(...ranks) + 2;
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-2 text-sm font-bold">{t("rankHistory")}</h3>
+      <h2 className="mb-2 text-sm font-bold">{t("rankHistory")}</h2>
       <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>

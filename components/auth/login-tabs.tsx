@@ -12,7 +12,7 @@ export function LoginTabs({ defaultMode, next, isGuest }: { defaultMode: "login"
     <div className="space-y-4 rounded-lg border border-border bg-card p-6">
       {!isGuest && (
         <>
-          <GuestLoginButton size="lg" className="w-full bg-[#5383e8] hover:bg-[#4a75d0]" />
+          <GuestLoginButton size="lg" className="w-full bg-primary hover:bg-primary/90" />
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <Separator className="flex-1" /> {t("or")} <Separator className="flex-1" />
           </div>
