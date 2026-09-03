@@ -20,7 +20,7 @@ async function main() {
   }
   const stats = await db.execute<{ slug: string; items: number; ranked: number; ratings: number; s: number }>(sql`
     select c.slug, count(s.*) items, count(s.rank) ranked, coalesce(sum(s.rating_count),0) ratings, count(*) filter (where s.tier='S') s
-    from categories c left join content_stats s on s.category_id=c.id group by c.slug order by c.id`);
+    from categories c left join content_stats s on s.category_id=c.id group by c.id, c.slug order by c.id`);
   console.table(stats);
   console.log(`done in ${((Date.now() - t) / 1000).toFixed(1)}s`);
   await close();
