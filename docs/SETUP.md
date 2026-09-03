@@ -72,3 +72,18 @@ pnpm dlx vercel --prod
 - 랭킹 계산의 정본은 Postgres 함수 `recompute_category(int)`. `lib/ranking` 은 동일 로직의 TS 미러이며 `tests/unit/pg-parity.test.ts` 가 pglite 로 두 결과의 일치를 검증한다.
 - `profiles.id` 는 `auth.users.id` 와 같지만 FK 를 걸지 않았다(시드 유저 대량 삽입 편의). 실제 가입은 `handle_new_user` 트리거가 프로필을 만든다.
 - 시드처럼 대량 삽입 시 `set app.bulk = 'on'` 으로 행 트리거를 우회하고, 끝나면 `refresh_all_content_stats` + `recompute_category` 로 일괄 재계산.
+
+## 6. 검증 결과 (2026-09-03, 로컬 prod 빌드 · 로컬 Supabase)
+| 항목 | 결과 |
+|---|---|
+| `pnpm typecheck && pnpm lint && pnpm build` | ✅ 0 error / 0 warning |
+| `pnpm test` (vitest) | ✅ 23/23 — 베이지안/티어/ELO/HOT, **PG `recompute_category` ↔ TS 일치(pglite)**, 비속어, slug |
+| `pnpm test:e2e` (Playwright, desktop+mobile) | ✅ 16/16 — 홈, 티어표 50행+필터 URL, 자동완성, 게스트 로그인→별점→리뷰→댓글→대결→프로필, KO/EN·다크/라이트, 커뮤니티, 유저 카테고리 |
+| Lighthouse 모바일(시뮬레이션) | 성능 74(홈)·74(티어표)·75(상세)·82(대결) / 접근성 96~97 / Best Practices 100 / SEO 92 |
+
+- SEO 92 의 유일한 감점은 `meta-description`: Next 15 의 스트리밍 메타데이터가 일반 브라우저 UA 에는 `<body>` 로 내려가기 때문. Googlebot 등 크롤러 UA 에는 `<head>` 에 들어감(curl 로 확인). `next.config.ts` 의 `htmlLimitedBots` 에 주요 봇을 등록해 둠.
+- 성능 74~82 는 로컬 Next 서버 + 로컬 Storage 이미지 기준 시뮬레이션. 실제 Vercel(엣지 캐시·Brotli) + Supabase CDN 환경에서 재측정 필요.
+
+## 7. 운영 주의
+- **`next start` 를 재시작할 때는 `pkill -f next-server`** 로 실제 서버 프로세스를 내려야 한다. `pkill -f "next start"` 는 pnpm 래퍼만 죽여서 이전 빌드 서버가 포트를 계속 점유하고, 새 빌드의 JS 청크가 400 으로 떨어져 페이지가 하이드레이션되지 않는다(로컬에서 실제로 겪은 문제).
+- 시드 재실행은 증분: 이미 별점/리뷰/대결/게시글이 있는 항목·카테고리는 건너뛴다. 전체 초기화는 `pnpm seed:synthetic -- --reset`.
