@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#26262e"/>
+      <stop offset="1" stop-color="#15151a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- tier-badge stripe -->
+  <rect x="64" y="404" width="60" height="44" rx="12" fill="#ff4e50"/>
+  <rect x="136" y="404" width="60" height="44" rx="12" fill="#ff8a3d"/>
+  <rect x="208" y="404" width="60" height="44" rx="12" fill="#5383e8"/>
+  <rect x="280" y="404" width="60" height="44" rx="12" fill="#00bba3"/>
+  <!-- R -->
+  <text x="72" y="356" font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-weight="900" font-size="330" fill="#ffffff" letter-spacing="-12">R</text>
+  <!-- .GG badge -->
+  <rect x="300" y="228" width="160" height="128" rx="28" fill="#00d5ff"/>
+  <text x="380" y="322" text-anchor="middle" font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-weight="900" font-size="92" fill="#0b1a20">GG</text>
+</svg>
